@@ -12,15 +12,13 @@ git clone https://github.com/xperience001/PAYPALL.git
 
 3. install dependencies
 ```
-cd webapps2024
-pip install -r requirements.txt
+cd webapps2024 && pip install -r requirements.txt
 ```
-5. Set up database (sqlite)
+4. Set up database (sqlite)
 ```
-cd webapps2024
-python manage.py migrate
+cd webapps2024 && python manage.py migrate
 ```
-4. start server
+5. start server
 ```
 python manage.py startserver
 ```
