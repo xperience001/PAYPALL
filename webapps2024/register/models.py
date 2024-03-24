@@ -21,7 +21,7 @@ class CustomUserManager(BaseUserManager):
         except ValidationError:
             raise ValueError(_("You must provide a valid email address"))
 
-    def create_superuser(self, email, name, password, *args, **kwargs):
+    def create_superuser(self, email, password, *args, **kwargs):
         kwargs.setdefault("is_staff", True)
         kwargs.setdefault("is_superuser", True)
         kwargs.setdefault("is_active", True)
@@ -31,16 +31,16 @@ class CustomUserManager(BaseUserManager):
         if not kwargs.get("is_superuser"):
             raise ValueError(_("Super user must be assigned to is_superuser=True"))
 
-        return self.create_user(email, name, password, *args, **kwargs)
+        return self.create_user(email, password, *args, **kwargs)
 
-    def create_user(self, email, name, password, *args, **kwargs):
+    def create_user(self, email, password, *args, **kwargs):
         if email:
             email = self.normalize_email(email)
             self.validateEmail(email)
         else:
             raise ValueError(_("CustomUser Account: You must provide an email address"))
         email = self.normalize_email(email)
-        user = self.model(email=email, name=name, *args, **kwargs)
+        user = self.model(email=email, *args, **kwargs)
         user.set_password(password)
         user.save()
         return user
@@ -61,7 +61,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["name"]
+    REQUIRED_FIELDS = ["first_name", "last_name"]
 
     class Meta:
         verbose_name = "Accounts"

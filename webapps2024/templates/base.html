@@ -1,0 +1,27 @@
+{% load static %} {% load crispy_forms_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" />
+    <!-- Custom styles -->
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+      }
+      .login-container {
+        margin-top: 100px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container"></div>
+    {% block main%} {%endblock main%}
+    <!-- Bootstrap 5 JS (optional) -->
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+  </body>
+</html>

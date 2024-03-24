@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-&!d-ljm_-@1o@peos6&zo%&of41sbk=1h_$z8dz7octar*a!bx
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+AUTH_USER_MODEL = "register.customuser"
 
 # Application definition
 
@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # RESTful App
     "rest_framework",
-    "rest_framework.authtoken",
+    # "rest_framework.authtoken",
+    "crispy_forms",
+    "crispy_bootstrap5",
     # Modules
     "payapp",
     "register",
@@ -121,9 +123,25 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_ROOT = ""
 
+STATIC_URL = "/static/"
+
+STATICFILES_DIRS = ("static",)
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+LOGIN_URL = "register:login"
+LOGIN_REDIRECT_URL = "payapp:dashboard"
+
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+# LOGIN_URL = "login"
+LOGOUT_URL = "register:logout"
+
+LOGOUT_REDIRECT_URL = LOGIN_URL

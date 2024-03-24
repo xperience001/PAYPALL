@@ -17,16 +17,10 @@ class Wallet(models.Model):
     )
     balance = models.PositiveIntegerField(default=1000)
     account_type = models.CharField(
-        max_length="20",
+        max_length=20,
         choices=(
-            (
-                "gbp",
-                "GBP",
-            ),
-            (
-                "usd",
-                "USD",
-            ),
+            ("gbp", "GBP"),
+            ("usd", "USD"),
         ),
     )
 
@@ -63,7 +57,11 @@ class Transaction(models.Model):
     )
     status = models.CharField(
         max_length=20,
-        choices=(("pending", "PENDING"), ("success", "SUCCESS"), ("failed", "FAILED")),
+        choices=(
+            ("pending", "PENDING"),
+            ("success", "SUCCESS"),
+            ("failed", "FAILED"),
+        ),
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
