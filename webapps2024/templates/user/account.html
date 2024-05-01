@@ -22,9 +22,13 @@
         <h4>Profile</h4>
         {% crispy account_form %}
       </div>
-      <div class="col-3">
+      <div class="col-3 my-2">
         <h4>Change password</h4>
         {% crispy password_form %}
+      </div>
+      <div class="col-9 my-5">
+        <h4>Change currency</h4>
+        {% crispy currency_form %}
       </div>
     </div>
   </main>

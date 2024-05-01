@@ -1,4 +1,3 @@
-from typing import Iterable
 from django.db import models
 
 from django.utils.translation import gettext_lazy as _
@@ -41,7 +40,7 @@ class Transaction(models.Model):
         max_length=20, choices=(("debit", "DEBIT"), ("credit", "CREDIT"))
     )
     trxn_from = models.ForeignKey(
-        "register.customuser",
+        "self",
         null=True,
         on_delete=models.CASCADE,
         related_name="sender",
@@ -69,10 +68,10 @@ class Transaction(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def save(self, force_insert, force_update, using, update_fields):
+    def save(self, *args, **kwargs):
         if not self.pk or (not self.new_balance and self.status == "success"):
             self.new_balance = self.wallet.balance
-        return super().save(force_insert, force_update, using, update_fields)
+        return super().save(*args, **kwargs)
 
 
 class Notification(models.Model):

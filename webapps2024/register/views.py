@@ -2,20 +2,27 @@ from django.db.models.query import QuerySet
 from django.http import HttpResponseRedirect
 from django.views.generic.edit import CreateView
 from django.views.generic import TemplateView, ListView, DetailView
-from .forms import SignUpForm, UpdatePasswordForm, UpdateProfileForm
-from django.urls import reverse_lazy
+from .forms import SignUpForm, UpdatePasswordForm, UpdateProfileForm, CustomLoginForm
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth import login
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from payapp.forms import SendForm, RequestForm
+from payapp.forms import SendForm, RequestForm, CurrencyForm
 from django.contrib import messages
 from django.db import transaction
 from payapp.models import Transaction
+from rest_framework.views import APIView
+from django.conf import settings
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+import requests
 
 # Create your views here.
 
 
 class CustomLoginView(LoginView):
+    form_class = CustomLoginForm
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Add your custom context here
@@ -73,10 +80,10 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
                     receiver_wallet.balance = receiver_wallet.balance + amount
                     sender_wallet.save()
                     receiver_wallet.save()
-                    Transaction.objects.create(
+                    trxn_from = Transaction.objects.create(
                         wallet=sender_wallet,
                         trxn_class="debit",
-                        trxn_from=sender,
+                        # trxn_from=sender,
                         amount=amount,
                         trxn_type="transfer",
                         status="success",
@@ -84,7 +91,7 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
                     Transaction.objects.create(
                         wallet=receiver_wallet,
                         trxn_class="credit",
-                        trxn_from=sender,
+                        trxn_from=trxn_from,
                         amount=amount,
                         trxn_type="deposit",
                         status="success",
@@ -99,20 +106,22 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
             if request_form.is_valid():
                 with transaction.atomic():
                     sender = self.request.user
-                    receiver = send_form.cleaned_data["recipient"]
-                    amount = send_form.cleaned_data["amount"]
+                    sender_wallet = sender.wallet.first()
+                    receiver = request_form.cleaned_data["recipient"]
+                    receiver_wallet = receiver.wallet.first()
+                    amount = request_form.cleaned_data["amount"]
 
-                    Transaction.objects.create(
+                    trxn_from = Transaction.objects.create(
                         wallet=sender_wallet,
                         trxn_class="credit",
-                        trxn_from=sender,
+                        # trxn_from=sender,
                         amount=amount,
                         trxn_type="request",
                     )
                     Transaction.objects.create(
                         wallet=receiver_wallet,
                         trxn_class="debit",
-                        trxn_from=sender,
+                        trxn_from=trxn_from,
                         amount=amount,
                         trxn_type="transfer",
                     )
@@ -127,22 +136,51 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
         return HttpResponseRedirect(self.request.path_info)
 
 
-class TransactionsView(LoginRequiredMixin, ListView):
-    template_name = "user/transactions.html"
-    model = Transaction
-    paginate_by = 10
-
-    def get_queryset(self):
-        user_wallet = self.request.user.wallet.first()
-        self.queryset = user_wallet.transactions.all()
-        return super().get_queryset()
-
-
 class AccountsPageView(LoginRequiredMixin, TemplateView):
     template_name = "user/account.html"
 
     def get_context_data(self, **kwargs):
+        user = self.request.user
         context = super().get_context_data(**kwargs)
-        context["account_form"] = UpdateProfileForm()
-        context["password_form"] = UpdatePasswordForm()
+        context["account_form"] = UpdateProfileForm(instance=user)
+        context["password_form"] = UpdatePasswordForm(instance=user)
+        context["currency_form"] = CurrencyForm(user=user)
         return context
+
+    def post(self, request, *args, **kwargs):
+        user = self.request.user
+        profile_form = UpdateProfileForm(request.POST, instance=user)
+        password_form = UpdatePasswordForm(request.POST, instance=user)
+        currency_form = CurrencyForm(
+            request.POST, user=user, initial={"to": user.wallet.first().account_type}
+        )
+        if "password" in request.POST:
+            if password_form.is_valid():
+                user.set_password(password_form.cleaned_data["password1"])
+                user.save()
+                messages.success(request, "password update successful")
+                return HttpResponseRedirect(request.path_info)
+            else:
+                for _, errors in password_form.errors.items():
+                    for error in errors:
+                        messages.error(request, f"update error: {error}")
+        elif "to" in request.POST:
+            if currency_form.is_valid():
+                wallet = currency_form.cleaned_data["wallet"]
+                acc_type = wallet.account_type
+                if acc_type == currency_form.cleaned_data["to"]:
+                    messages.success(request, "Currency update successful")
+                else:
+                    wallet.account_type = currency_form.cleaned_data["to"]
+                    wallet.save()
+                    messages.success(request, "Currency update successful")
+        else:
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, "profile update successful")
+                return HttpResponseRedirect(request.path_info)
+            else:
+                for _, errors in password_form.errors.items():
+                    for error in errors:
+                        messages.error(request, f"update error: {error}")
+        return HttpResponseRedirect(self.request.path_info)

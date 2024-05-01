@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     # RESTful App
     "rest_framework",
-    # "rest_framework.authtoken",
     "crispy_forms",
     "crispy_bootstrap5",
     # Modules
@@ -159,3 +158,12 @@ MESSAGE_TAGS = {
     messages.WARNING: "alert-warning",
     messages.ERROR: "alert-danger",
 }
+
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+}
+
+EURO_RATE = 1.97634

@@ -1,8 +1,10 @@
-from typing import Any
+from typing import Any, Mapping
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
 from django.contrib.auth import get_user_model
+from django.forms.renderers import BaseRenderer
+from django.forms.utils import ErrorList
 
 User = get_user_model()
 
@@ -26,9 +28,9 @@ class SendForm(forms.Form):
         )
 
     def clean(self):
-        data = super().clean()
-        username = data.get("receiver")
-        amount = data.get("amount")
+        cleaned_data = super().clean()
+        username = cleaned_data.get("receiver")
+        amount = cleaned_data.get("amount")
         if not amount.isdigit():
             raise forms.ValidationError("amount must be above 100")
         user = self.user
@@ -38,9 +40,11 @@ class SendForm(forms.Form):
         fetch_recipient = User.objects.filter(user_name=username)
         if not fetch_recipient.exists():
             raise forms.ValidationError("recipient does not exist")
-        data["amount"] = int(amount)
-        data["recipient"] = fetch_recipient.first()
-        return data
+        if self.user == fetch_recipient.first():
+            raise forms.ValidationError("can send money to self")
+        cleaned_data["amount"] = int(amount)
+        cleaned_data["recipient"] = fetch_recipient.first()
+        return cleaned_data
 
 
 class RequestForm(forms.Form):
@@ -63,9 +67,9 @@ class RequestForm(forms.Form):
         )
 
     def clean(self):
-        data = super().clean()
-        username = data.get("user")
-        amount = data.get("amount")
+        cleaned_data = super().clean()
+        username = cleaned_data.get("user")
+        amount = cleaned_data.get("amount")
         if not amount.isdigit():
             raise forms.ValidationError("amount must be above 100")
 
@@ -75,7 +79,33 @@ class RequestForm(forms.Form):
         wallet = fetch_recipient.first().wallet.first()
         if int(amount) > wallet.balance:
             raise forms.ValidationError("insufficient funds")
+        if self.user == fetch_recipient.first():
+            raise forms.ValidationError("can not request from self")
+        cleaned_data["amount"] = int(amount)
+        cleaned_data["recipient"] = fetch_recipient.first()
+        return cleaned_data
 
-        data["amount"] = int(amount)
-        data["recipient"] = fetch_recipient.first()
-        return data
+
+class CurrencyForm(forms.Form):
+    to = forms.ChoiceField(
+        widget=forms.Select,
+        choices=(
+            ("usd", "USD"),
+            ("gbp", "GBP"),
+        ),
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout("to", Submit("submit", "Save"))
+        if not self.user:
+            raise forms.ValidationError("authentication required")
+        self.initial = kwargs.pop("initial", {})
+
+    def clean(self):
+        cleaned_data = super().clean()
+        wallet = self.user.wallet.first()
+        cleaned_data["wallet"] = wallet
+        return cleaned_data

@@ -153,16 +153,21 @@
         <div>
           <ul class="navbar-nav me-auto mb-2 mb-md-0">
             <li class="nav-item">
-              <a class="nav-link {% if request.path == '/user/home' %}{% endif %}" aria-current="{% if request.path == '/user/home' %}{% endif %}" href="/user/home">Home</a>
+              {# prettier-ignore #}
+              <a class="nav-link 
+              {% if request.path == '/' %}active{% endif %}
+              " aria-current="{% if request.path == '' %}page{% endif %}" href="{% url 'register:dashboard' %}">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link {% if request.path == '/user/transactions' %}{% endif %}" href="/user/transactions" aria-current="{% if request.path == '/user/transactions' %}{% endif %}">Transactions</a>
+              {# prettier-ignore #}
+              <a class="nav-link {% if request.path == '/transactions' %}active{% endif %}" href="{% url 'payapp:transactions' %}" aria-current="{% if request.path == '/transactions' %}page{% endif %}">Transactions</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link {% if request.path == '/user/account' %}{% endif %}" href="/user/account" aria-current="{% if request.path == '/user/account' %}{% endif %}">Account</a>
+              {# prettier-ignore #}
+              <a class="nav-link {% if request.path == '/account' %}active{% endif %}" href="{% url 'register:account' %}" aria-current="{% if request.path == '/account' %}page{% endif %}">Account</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-danger" href="/user/auth/logout">Logout</a>
+              <a class="nav-link text-danger" href="{% url 'register:logout' %}">Logout</a>
             </li>
           </ul>
         </div>

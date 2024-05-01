@@ -1,6 +1,6 @@
 {% extends './base.html' %}
 {% load humanize %}
-
+{% load custom_filters %}
 {% block title %}
   <title>Transactions History</title>
 {% endblock %}
@@ -17,6 +17,7 @@
           <th>Type</th>
           <th>Balance</th>
           <th>Status</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -24,16 +25,32 @@
           <tr>
             <td>{{ transaction.created_at|date }}</td>
             <td>{{ transaction.trxn_class|capfirst }}</td>
-            <td>{{ transaction.amount }}</td>
+            <td>
+              <span class="text-sm-center">
+                {% if transaction.trxn_class == 'debit' %}
+                  -
+                {% else %}
+                  +
+                {% endif %}{{ transaction.amount|to_value:request.user|floatformat:2|intcomma }}
+              </span>
+            </td>
             <td>{{ transaction.trxn_type|upper }}</td>
             <td>
               {% if transaction.new_balance %}
-                {{ transaction.new_balance }}
+                {{ transaction.new_balance|to_value:request.user|to_value:request.user|floatformat:2|intcomma }}
               {% else %}
                 0
               {% endif %}
             </td>
             <td>{{ transaction.status|capfirst }}</td>
+            <td>
+              {% if transaction.trxn_type == 'transfer' and transaction.status == 'pending' %}
+                <div>
+                  <a href="{% url 'payapp:approve-transaction' pk=transaction.pk %}"><span class="btn btn-primary btn-sm">approve</span></a>
+                  <a href="{% url 'payapp:decline-transaction' pk=transaction.pk %}"><span class="btn btn-danger btn-sm">decline</span></a>
+                </div>
+              {% endif %}
+            </td>
           </tr>
         {% endfor %}
       </tbody>

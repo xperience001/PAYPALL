@@ -1,5 +1,3 @@
-import uuid
-
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -71,5 +69,5 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def email_user(self, subject, message):
         send_mail(subject, message, "1@1.com", [self.email], fail_silently=False)
 
-    def __str__(self) -> str:
+    def __str__(self) :
         return self.name
