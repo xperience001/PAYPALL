@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 
+from django.contrib import messages
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -37,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.humanize",
     # RESTful App
     "rest_framework",
     # "rest_framework.authtoken",
@@ -45,6 +48,7 @@ INSTALLED_APPS = [
     # Modules
     "payapp",
     "register",
+    "bootstrap5",
 ]
 
 MIDDLEWARE = [
@@ -135,7 +139,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 LOGIN_URL = "register:login"
-LOGIN_REDIRECT_URL = "payapp:dashboard"
+LOGIN_REDIRECT_URL = "register:dashboard"
 
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -145,3 +149,13 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 LOGOUT_URL = "register:logout"
 
 LOGOUT_REDIRECT_URL = LOGIN_URL
+
+
+# messages
+MESSAGE_TAGS = {
+    messages.DEBUG: "alert-secondary",
+    messages.INFO: "alert-info",
+    messages.SUCCESS: "alert-success",
+    messages.WARNING: "alert-warning",
+    messages.ERROR: "alert-danger",
+}

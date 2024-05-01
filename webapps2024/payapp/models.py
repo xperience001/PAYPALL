@@ -1,3 +1,4 @@
+from typing import Iterable
 from django.db import models
 
 from django.utils.translation import gettext_lazy as _
@@ -23,6 +24,7 @@ class Wallet(models.Model):
             ("usd", "USD"),
         ),
     )
+    account_number = models.CharField(max_length=10, null=True)
 
     def __str__(self):
         return "{} Wallet".format(self.user.email)
@@ -48,13 +50,14 @@ class Transaction(models.Model):
     trxn_type = models.CharField(
         max_length=20,
         choices=(
-            ("withdraw", "WITHDRAW"),
+            # ("withdraw", "WITHDRAW"),
             ("transfer", "TRANSFER"),
             ("deposit", "DEPOSIT"),
-            ("payment", "PAYMENT"),
+            # ("payment", "PAYMENT"),
             ("request", "REQUEST"),
         ),
     )
+    new_balance = models.CharField(max_length=50, null=True)
     status = models.CharField(
         max_length=20,
         choices=(
@@ -62,8 +65,14 @@ class Transaction(models.Model):
             ("success", "SUCCESS"),
             ("failed", "FAILED"),
         ),
+        default="pending",
     )
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, force_insert, force_update, using, update_fields):
+        if not self.pk or (not self.new_balance and self.status == "success"):
+            self.new_balance = self.wallet.balance
+        return super().save(force_insert, force_update, using, update_fields)
 
 
 class Notification(models.Model):

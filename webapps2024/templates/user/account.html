@@ -1,0 +1,31 @@
+{% extends './base.html' %}
+{% comment %} {% load humanize %} {% endcomment %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}
+  <title>Account Details</title>
+{% endblock %}
+
+{% block submain %}
+  <main class="container">
+    {% for message in messages %}
+      {% if message.tags %}
+        <div class="alert {{ message.tags }}">{{ message }}</div>
+      {% else %}
+        <div class="alert alert-info">{{ message }}</div>
+      {% endif %}
+    {% endfor %}
+    <h3>Account settings</h3>
+    <div class="row py-5">
+      <div class="col-8">
+        <h4>Profile</h4>
+        {% crispy account_form %}
+      </div>
+      <div class="col-4">
+        <h4>Change password</h4>
+        {% crispy password_form %}
+      </div>
+    </div>
+  </main>
+{% endblock %}
