@@ -16,10 +16,12 @@ class SignUpForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Row(
-                Column("email", css_class="form-group col-md-6 mb-0"),
-                Column("password", css_class="form-group col-md-6 mb-0"),
+                Column("first_name", css_class="form-group col-md-6 mb-0"),
+                Column("last_name", css_class="form-group col-md-6 mb-0"),
                 css_class="form-row",
             ),
+            "email",
+            "password",
             Submit("submit", "Sign Up"),
         )
 
