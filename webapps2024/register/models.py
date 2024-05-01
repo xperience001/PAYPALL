@@ -38,7 +38,7 @@ class CustomUserManager(BaseUserManager):
         else:
             raise ValueError(_("CustomUser Account: You must provide an email address"))
         email = self.normalize_email(email)
-        user = self.model(email=email, is_active=True, *args, **kwargs)
+        user = self.model(email=email, *args, **kwargs)
         user.set_password(password)
         user.save()
         return user
@@ -69,5 +69,5 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def email_user(self, subject, message):
         send_mail(subject, message, "1@1.com", [self.email], fail_silently=False)
 
-    def __str__(self) :
+    def __str__(self):
         return self.name
