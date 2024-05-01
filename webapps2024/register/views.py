@@ -2,7 +2,7 @@ from django.db.models.query import QuerySet
 from django.http import HttpResponseRedirect
 from django.views.generic.edit import CreateView
 from django.views.generic import TemplateView, ListView, DetailView
-from .forms import SignUpForm
+from .forms import SignUpForm, UpdatePasswordForm, UpdateProfileForm
 from django.urls import reverse_lazy
 from django.contrib.auth import login
 from django.contrib.auth.views import LoginView
@@ -138,7 +138,11 @@ class TransactionsView(LoginRequiredMixin, ListView):
         return super().get_queryset()
 
 
-
 class AccountsPageView(LoginRequiredMixin, TemplateView):
-    template_name = 'user/account.html'
-    
+    template_name = "user/account.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["account_form"] = UpdateProfileForm()
+        context["password_form"] = UpdatePasswordForm()
+        return context

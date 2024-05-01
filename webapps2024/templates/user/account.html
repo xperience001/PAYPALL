@@ -17,12 +17,12 @@
       {% endif %}
     {% endfor %}
     <h3>Account settings</h3>
-    <div class="row py-5">
-      <div class="col-8">
+    <div class="row py-5 d-flex align-items-center justify-content-evenly">
+      <div class="col-6">
         <h4>Profile</h4>
         {% crispy account_form %}
       </div>
-      <div class="col-4">
+      <div class="col-3">
         <h4>Change password</h4>
         {% crispy password_form %}
       </div>

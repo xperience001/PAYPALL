@@ -37,11 +37,13 @@ class UpdateProfileForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Row(
-                Column("email", css_class="form-group col-md-6 mb-0"),
+                Column("first_name", css_class="form-group col-md-6 mb-0"),
+                Column("last_name", css_class="form-group col-md-6 mb-0"),
                 css_class="form-row",
             ),
             Row(
-                Column("firsr", css_class="form-group col-md-6 mb-0"),
+                Column("email", css_class="form-group col-md-6 mb-0"),
+                Column("user_name", css_class="form-group col-md-6 mb-0"),
                 css_class="form-row",
             ),
             Submit("submit", "Sign Up"),
@@ -49,11 +51,15 @@ class UpdateProfileForm(forms.ModelForm):
 
 
 class UpdatePasswordForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput)
+    password = forms.CharField(widget=forms.PasswordInput, label="Current password")
+    password1 = forms.CharField(widget=forms.PasswordInput, label="Enter new password")
+    password2 = forms.CharField(
+        widget=forms.PasswordInput, label="Confirm new password"
+    )
 
     class Meta:
         model = CustomUser
-        fields = ["first_name", "last_name", "email", "password"]
+        fields = ["password"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
