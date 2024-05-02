@@ -49,10 +49,8 @@ class Transaction(models.Model):
     trxn_type = models.CharField(
         max_length=20,
         choices=(
-            # ("withdraw", "WITHDRAW"),
             ("transfer", "TRANSFER"),
             ("deposit", "DEPOSIT"),
-            # ("payment", "PAYMENT"),
             ("request", "REQUEST"),
         ),
     )
