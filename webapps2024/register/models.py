@@ -63,8 +63,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ["first_name", "last_name", "user_name"]
 
     class Meta:
-        verbose_name = "Accounts"
-        verbose_name_plural = "Accounts"
+        verbose_name = "Users"
+        verbose_name_plural = "Users"
 
     def __str__(self):
-        return self.name
+        return f"{self.first_name} {self.last_login}"

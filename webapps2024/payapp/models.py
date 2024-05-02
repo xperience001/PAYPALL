@@ -26,7 +26,7 @@ class Wallet(models.Model):
     account_number = models.CharField(max_length=10, null=True)
 
     def __str__(self):
-        return "{} Wallet".format(self.user.email)
+        return "{} Wallet".format(self.user.user_name)
 
 
 class Transaction(models.Model):
@@ -70,6 +70,9 @@ class Transaction(models.Model):
         if not self.pk or (not self.new_balance and self.status == "success"):
             self.new_balance = self.wallet.balance
         return super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.amount} {self.trxn_type} from {self.wallet.user.user_name}"
 
 
 class Notification(models.Model):
