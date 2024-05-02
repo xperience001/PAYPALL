@@ -29,7 +29,7 @@
               {% if transaction.trxn_from.wallet.user.user_name %}
                 {{ transaction.trxn_from.wallet.user.user_name|capfirst }}
               {% else %}
-                Self
+                {{ transaction.wallet.user.user_name|capfirst }}
               {% endif %}
             </td>
             <td>{{ transaction.trxn_class|capfirst }}</td>

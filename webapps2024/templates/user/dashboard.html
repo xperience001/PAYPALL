@@ -110,7 +110,7 @@
               {% if account_type == 'usd' %}
                 $
               {% else %}
-                €
+                ₤
               {% endif %}{{ balance|to_value:request.user|floatformat:2|intcomma }}
             </p>
           </div>
@@ -154,7 +154,7 @@
                   {% if transaction.trxn_from.wallet.user.user_name %}
                     {{ transaction.trxn_from.wallet.user.user_name|capfirst }}
                   {% else %}
-                    Self
+                    {{ transaction.wallet.user.user_name|capfirst }}
                   {% endif %}
                 </td>
                 <td>{{ transaction.trxn_type|capfirst }}</td>
