@@ -12,6 +12,7 @@
       <thead>
         <tr>
           <th>Date</th>
+          <th>User</th>
           <th>Class</th>
           <th>Amount</th>
           <th>Type</th>
@@ -24,6 +25,13 @@
         {% for transaction in object_list %}
           <tr>
             <td>{{ transaction.created_at|date }}</td>
+            <td>
+              {% if transaction.trxn_from.wallet.user.user_name %}
+                {{ transaction.trxn_from.wallet.user.user_name|capfirst }}
+              {% else %}
+                Self
+              {% endif %}
+            </td>
             <td>{{ transaction.trxn_class|capfirst }}</td>
             <td>
               <span class="text-sm-center">

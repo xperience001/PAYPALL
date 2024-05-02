@@ -150,7 +150,13 @@
             {% for transaction in transactions|slice:':8' %}
               <tr>
                 <td>{{ transaction.created_at|date }}</td>
-                <td>{{ transaction.trxn_from.wallet.user.user_name|capfirst }}</td>
+                <td>
+                  {% if transaction.trxn_from.wallet.user.user_name %}
+                    {{ transaction.trxn_from.wallet.user.user_name|capfirst }}
+                  {% else %}
+                    Self
+                  {% endif %}
+                </td>
                 <td>{{ transaction.trxn_type|capfirst }}</td>
                 <td>{{ transaction.amount|to_value:request.user|floatformat:2|intcomma }}</td>
                 <td>{{ transaction.status|upper }}</td>
