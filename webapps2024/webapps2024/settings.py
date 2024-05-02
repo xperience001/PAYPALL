@@ -167,4 +167,4 @@ REST_FRAMEWORK = {
     ],
 }
 
-EURO_RATE = 1.97634
+EURO_RATE = 0.8
